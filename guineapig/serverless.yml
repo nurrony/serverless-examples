@@ -1,0 +1,27 @@
+service: my-first-api
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+
+# you can overwrite defaults here
+  stage: dev
+  region: us-east-1
+
+# you can define service wide environment variables here
+  environment:
+    MY_NAME: 'Nur Rony'
+    GF_NAME: 'Afifa Akhter'
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  hello:
+    handler: handler.hello

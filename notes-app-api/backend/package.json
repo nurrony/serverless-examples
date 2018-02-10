@@ -1,0 +1,35 @@
+{
+  "name": "notes-app-api",
+  "version": "1.0.0",
+  "description": "Simple Note Taking App on AWS Lambda",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nmrony/serverless-notes-app.git"
+  },
+  "keywords": [],
+  "author": "Nur Rony <pro.nmrony@gmail.com> (http://nmrony.info/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nmrony/serverless-notes-app/issues"
+  },
+  "homepage": "https://github.com/nmrony/serverless-notes-app#readme",
+  "devDependencies": {
+    "aws-sdk": "^2.180.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "serverless-webpack": "^4.2.0",
+    "webpack": "^3.10.0",
+    "webpack-node-externals": "^1.6.0"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "uuid": "^3.1.0"
+  }
+}
