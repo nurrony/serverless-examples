@@ -1,0 +1,19 @@
+# Update the service name below with your own service name
+service: guineapig
+
+# Please ensure the serverless-kubeless provider plugin is installed globally.
+# $ npm install -g serverless-kubeless
+#
+# ...before installing project dependencies to register this provider.
+# $ npm install
+
+provider:
+  name: kubeless
+  runtime: nodejs6
+
+plugins:
+  - serverless-kubeless
+
+functions:
+  capitalize:
+    handler: handler.capitalize
