@@ -1,0 +1,32 @@
+# serverless.yml
+
+service: users-service
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: us-east-1
+  environment:
+    SERVICE_NAME: ${self:service}
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http: GET hello
+
+plugins:
+  - serverless-domain-manager
+
+custom:
+  custom:
+    stage: ${opt:stage, self:provider.stage}
+    domains:
+      prod: api.nmrony.info
+      staging: staging-api.nmrony.info
+      dev: dev-api.nmrony.info
+  customDomain:
+    basePath: ""
+    domainName: ${self:custom.domains.${self:custom.stage}}
+    stage: "${self:custom.stage}"
+    createRoute53Record: true
