@@ -1,14 +1,22 @@
 # serverless.yml
 
-service: my-express-application
+service: serverless-express-api
+# Uncomment these lines only for local development
+# plugins:
+#   - serverless-offline
+#   - serverless-dynamodb-local
 
 custom:
   tableName: 'users-table-${self:provider.stage}'
+  # Uncomment these lines only for local development
+  # dynamodb:
+  #   start:
+  #   migrate: true
 
 provider:
   name: aws
   runtime: nodejs6.10
-  stage: dev
+  stage: prod
   region: us-east-1
   iamRoleStatements:
     - Effect: Allow
@@ -30,6 +38,14 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+  getUser:
+    handler: index.handler
+    events:
+      - http: 'GET /users/{proxy+}'
+  createUser:
+    handler: index.handler
+    events:
+      - http: 'POST /users'
 
 resources:
   Resources:
