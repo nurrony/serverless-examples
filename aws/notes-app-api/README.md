@@ -9,6 +9,7 @@ Backend
  - AWS DynamoDB
  - AWS Lambda
  - AWS IAM
+ - AWS S3
 
 Frontend
 ---------
