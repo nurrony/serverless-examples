@@ -1,0 +1,20 @@
+service: aws-lambda-java-mongodb # NOTE: update this with your service name
+
+provider:
+  name: aws
+  runtime: java8
+
+# you can add packaging information here
+package:
+  artifact: target/mongo-access-test.jar
+
+functions:
+  hello:
+    handler: info.nmrony.Handler
+  mongodb-collections:
+    handler: info.nmrony.GetMongoDBCollectionHandler
+    events:
+      - http:
+          path: /mongodb/{dbName}/collections
+          method: get
+          cors: true
