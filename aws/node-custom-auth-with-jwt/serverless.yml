@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: node-api-with-jwt
+service: node-custom-auth-with-jwt
 
 custom:
   secrets: ${file(secrets.json)}
