@@ -26,7 +26,11 @@ provider:
   region: us-east-1
   environment:
     JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
-    DB: ${self:custom.secrets.DB}
+    DB_HOST: ${self:custom.secrets.DB_HOST}
+    DB_NAME: ${self:custom.secrets.DB_NAME}
+
+plugins:
+  - serverless-offline
 
 functions:
   verify-token:

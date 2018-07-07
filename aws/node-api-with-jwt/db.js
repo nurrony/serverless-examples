@@ -7,13 +7,11 @@ module.exports = connectToDatabase = () => {
     return Promise.resolve();
   }
 
-  console.log('=> using new database connection');
-  const DB_DSN = `${process.env.DB.host}/${process.env.DB.name}`;
+  console.log('=> using new database connection', process.env.DB_HOST, process.env.DB_NAME);
+  const DB_DSN = `${process.env.DB_HOST}/${process.env.DB_NAME}`;
+  console.log(DB_DSN);
   return mongoose
-    .connect(
-      DB_DSN,
-      { useMongoClient: true }
-    ) // keep the connection string in an env var
+    .connect(DB_DSN) // keep the connection string in an env var
     .then(db => {
       isConnected = db.connections[0].readyState;
     });
