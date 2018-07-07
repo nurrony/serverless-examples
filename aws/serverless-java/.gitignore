@@ -4,7 +4,8 @@ target
 /.settings/
 .project
 .classpath
-
+.idea
+*.iml
 # Package Files
 *.jar
 *.war
