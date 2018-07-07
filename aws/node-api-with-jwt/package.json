@@ -12,6 +12,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "bcryptjs-then": "^1.0.1",
+    "dotenv": "^6.0.0",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.2.1"
   },
