@@ -8,7 +8,12 @@ module.exports = connectToDatabase = () => {
   }
 
   console.log('=> using new database connection');
-  return mongoose.connect(process.env.DB) // keep the connection string in an env var
+  const DB_DSN = `${process.env.DB.host}/${process.env.DB.name}`;
+  return mongoose
+    .connect(
+      DB_DSN,
+      { useMongoClient: true }
+    ) // keep the connection string in an env var
     .then(db => {
       isConnected = db.connections[0].readyState;
     });
