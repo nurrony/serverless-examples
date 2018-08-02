@@ -6,4 +6,5 @@ jspm_packages
 .serverless
 .webpack
 info.md
-client-web/src/config.js
+frontend/src/config.js
+test.sh
