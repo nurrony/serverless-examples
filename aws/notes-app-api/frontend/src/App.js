@@ -7,6 +7,15 @@ import './App.css';
 import Routes from './Routes';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isAuthenticated: false,
+      isAuthenticating: true
+    };
+  }
+
   async componentDidMount() {
     try {
       if (await Auth.currentSession()) {
@@ -19,15 +28,6 @@ class App extends Component {
     }
 
     this.setState({ isAuthenticating: false });
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isAuthenticated: false,
-      isAuthenticating: true
-    };
   }
 
   handleLogout = async event => {
