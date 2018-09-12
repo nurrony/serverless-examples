@@ -36,7 +36,7 @@ function generateEmailParams(body) {
   }
 
   return {
-    Source: myEmail,
+    Source: 'hello@nmrony.info',
     Destination: { ToAddresses: [myEmail] },
     ReplyToAddresses: [email],
     Message: {
