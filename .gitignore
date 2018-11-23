@@ -150,3 +150,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+.firebase
+*.log
+.firebaserc
