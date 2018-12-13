@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Firebase File Upload</title>
+  </head>
+  <body>
+    <form id="fileuploader" enctype="multipart/form-data" method="post">
+      <label for="fileToUpload">Select Files to Upload</label><br />
+      <input type="file" name="fileToUpload" multiple="" id="fileToUpload" /><br />
+      <input type="button" onclick="sendRequest(event);" value="Upload" />
+      <!-- a place for File Listing -->
+      <div id="fileList"></div>
+    </form>
+
+    <script src="main.js"></script>
+  </body>
+</html>
