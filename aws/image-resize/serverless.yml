@@ -1,0 +1,79 @@
+service: image-resize
+
+plugins:
+  - serverless-plugin-tracing
+  - serverless-secrets-plugin
+
+custom:
+  secrets: ${file(secrets.${self:provider.stage}.yml)}
+  bucketName: image-resize-${self:provider.stage}
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${env:STAGE, 'dev'}
+  tracing: true
+  region: ${env:REGION, 'ca-central-1'}
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 's3:ListBucket'
+      Resource: 'arn:aws:s3:::${self:custom.bucketName}'
+    - Effect: 'Allow'
+      Action:
+        - 's3:PutObject'
+      Resource: 'arn:aws:s3:::${self:custom.bucketName}'
+    - Effect: 'Allow'
+      Action:
+        - 'xray:PutTraceSegments'
+        - 'xray:PutTelemetryRecords'
+      Resource:
+        - '*'
+
+functions:
+  resize:
+    handler: resize.handler
+    environment:
+      BUCKET: ${self:custom.bucketName}
+    events:
+      - http:
+          path: resize
+          method: get
+
+resources:
+  Resources:
+    ImageResizeOnTheFly:
+      Type: AWS::S3::Bucket # creating an S3 Bucket
+      Properties:
+        # AccessControl: PublicReadWrite
+        BucketName: ${self:custom.bucketName}
+        # WebsiteConfiguration: # enabling the static website option
+        #   ErrorDocument: error.html
+        #   IndexDocument: index.html
+        #   RoutingRules: # telling it to redirect for every 404 error
+        #     -
+        #       RedirectRule:
+        #         HostName: ${self:custom.secrets.DOMAIN} # API Gateway domain
+        #         HttpRedirectCode: "307" # temporary redirect HTTP code
+        #         Protocol: "https"
+        #         ReplaceKeyPrefixWith: "${self:provider.stage}/resize?key=" # route
+        #       RoutingRuleCondition:
+        #         HttpErrorCodeReturnedEquals: "404"
+        #         KeyPrefixEquals: ""
+    ImageResizeOnTheFlyPolicy:
+      Type: AWS::S3::BucketPolicy # add policy for public read access
+      Properties:
+        Bucket:
+          Ref: ImageResizeOnTheFly
+        PolicyDocument:
+          Statement:
+            - Action:
+                - 's3:*'
+              Effect: 'Allow'
+              Resource:
+                Fn::Join:
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - Ref: ImageResizeOnTheFly
+                    - '/*'
+              Principal: '*'

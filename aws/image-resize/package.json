@@ -1,0 +1,14 @@
+{
+  "name": "image-resize",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Serverless image resize on-the-fly.",
+  "main": "resize.js",
+  "dependencies": {
+    "sharp": "^0.22.1"
+  },
+  "devDependencies": {
+    "serverless-plugin-tracing": "^2.0.0",
+    "serverless-secrets-plugin": "^0.1.0"
+  }
+}
