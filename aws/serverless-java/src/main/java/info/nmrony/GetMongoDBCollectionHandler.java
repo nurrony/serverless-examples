@@ -1,25 +1,19 @@
 package info.nmrony;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.BasicConfigurator;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 
 public class GetMongoDBCollectionHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
@@ -35,6 +29,7 @@ public class GetMongoDBCollectionHandler implements RequestHandler<Map<String, O
     List<String> collections;
 
     try (MongoClient mongoClient = _getMongoDBClient(Dsn)) {
+      @SuppressWarnings("unchecked")
       Map<String, String> pathParameters = (Map<String, String>) input.get("pathParameters");
       String dbName = pathParameters.get("dbName");
       LOG.info("Getting paramName: " + dbName);

@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-s3-sns-sqs-lambda
+
+Parameters:
+  AppBucketName:
+    Type: String
+    Description: "REQUIRED: Unique S3 bucket name to use for the app."
+
+Resources:
+  SnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      FifoTopic: true
+      TopicName: sam-s3-sns-sqs-lambda.fifo
+      ContentBasedDeduplication: true
+      # # Subscribes the SQS queue to the SNS topic
+      # Subscription:
+      #   - Protocol: sqs
+      #     Endpoint: !GetAtt RawQueue.Arn
+
+  # S3 Bucket
+  AppBucket:
+    Type: AWS::S3::Bucket
+    DependsOn:
+      - S3ToSnsTopicPolicy
+    Properties:
+      BucketName: !Ref AppBucketName
+      NotificationConfiguration:
+        TopicConfigurations:
+          - Event: s3:ObjectCreated:*
+            Topic: !Ref SnsTopic
+
+  S3ToSnsTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref SnsTopic
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 's3.amazonaws.com'
+            Action: sns:Publish
+            Resource: !Ref SnsTopic
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Join ["",['arn:aws:s3:::',!Ref AppBucketName]]
+              StringEquals:
+                aws:SourceAccount: !Ref 'AWS::AccountId'
+
+  # # Policy allows SNS to publish to this SQS queue
+  # SnsToSqsPolicy:
+  #   Type: AWS::SQS::QueuePolicy
+  #   Properties:
+  #     Queues:
+  #       - !Ref RawQueue
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Sid: "Allow SNS publish to SQS"
+  #           Effect: Allow
+  #           Principal:
+  #             Service: "sns.amazonaws.com"
+  #           Resource: !GetAtt RawQueue.Arn
+  #           Action: SQS:SendMessage
+  #           Condition:
+  #             ArnEquals:
+  #               aws:SourceArn: !Ref SnsTopic
+
+  # S3JsonLoggerFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Handler: src/handlers/s3-json-logger.s3JsonLoggerHandler
+  #     Runtime: nodejs14.x
+  #     MemorySize: 128
+  #     Timeout: 30
+  #     Policies:
+  #       S3ReadPolicy:
+  #         BucketName: !Ref AppBucketName
+  #     Environment:
+  #       Variables:
+  #         API_URL: https://google.com
+  #     Events:
+  #       SqsEvent:
+  #         Type: SQS
+  #         Properties:
+  #           Queue: !GetAtt RawQueue.Arn
+  #           BatchSize: 10
+  #           Enabled: true
+
+
+  # DeadLetter:
+  #   Type: AWS::SQS::Queue
+  #   Properties:
+  #     FifoQueue: true
+  #     MessageRetentionPeriod: 1209600
+
+  # RawQueue:
+  #   Type: AWS::SQS::Queue
+  #   Properties:
+  #     DelaySeconds: 0
+  #     FifoQueue: true
+  #     ContentBasedDeduplication: true
+  #     MessageRetentionPeriod: 1209600
+  #     VisibilityTimeout: 60
+  #     RedrivePolicy:
+  #       deadLetterTargetArn: !GetAtt DeadLetter.Arn
+  #       maxReceiveCount: 3 # how many times should a msg be put back into the queue
+  #     Tags:
+  #       - Key: 'Created By'
+  #         Value: Rony

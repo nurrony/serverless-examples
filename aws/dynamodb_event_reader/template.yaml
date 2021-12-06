@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    dynamodb_event_reader
+
+    Sample SAM Template for dynamodb_event_reader to interact with DynamoDB Events.
+
+# ====================================
+# PARAMETERS SETUP
+# ====================================
+    Parameters:
+      StageName:
+        Type: String
+        Default: dev
+        Description: (Required) Enter dev, prod. Default is dev.
+        AllowedValues:
+          - dev
+          - prod
+      ProjectName:
+        Type: String
+        Default: sam-api
+        Description: (Required) The name of the project
+        MinLength: 3
+        MaxLength: 50
+        AllowedPattern: ^[A-Za-z_-]+$
+        ConstraintDescription: "Required. Can be characters, hyphen, and underscore only. No numbers or special characters allowed."
+      ExistingTable:
+        Type: String
+        Default: example-table
+        Description: (Required) The name of existing DynamoDB
+        MinLength: 3
+        MaxLength: 50
+        AllowedPattern: ^[A-Za-z_-]+$
+        ConstraintDescription: "Required. Can be characters, hyphen, and underscore only. No numbers or special characters allowed."
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Api:
+    Cors:
+        AllowMethods: "'OPTIONS,PUT'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+    Function:
+        Timeout: 5
+        Runtime: python3.7
+        MemorySize: 256
+        Environment:
+          Variables:
+            TABLE_NAME: !Ref ExistingTable
+
+Resources:
+    Api:
+        OpenApiVersion: 3.0.1
+    ReadDynamoDBEvent:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: read_dynamodb_event/
+            Handler: app.lambda_handler
+            Events:
+                DynamoDBEvent:
+                    Type: DynamoDB # More info about DynamoDB Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb
+                    Properties:
+                        Stream:
+                            !GetAtt DynamoDBTable.StreamArn
+                        StartingPosition: TRIM_HORIZON
+                        BatchSize: 10
+
+    DynamoDBTable:
+        Type: 'AWS::DynamoDB::Table'
+        Properties:
+            StreamSpecification:
+                StreamViewType: NEW_AND_OLD_IMAGES
+            ProvisionedThroughput:
+                WriteCapacityUnits: 5
+                ReadCapacityUnits: 5
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - KeyType: HASH
+                  AttributeName: id
