@@ -4,7 +4,7 @@
   "description": "Serverless contact form using AWS SES",
   "main": "main.js",
   "dependencies": {
-    "aws-sdk": "^2.304.0"
+    "aws-sdk": "^2.814.0"
   },
   "devDependencies": {
     "serverless": "^1.30.3"
