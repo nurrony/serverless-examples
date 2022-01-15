@@ -1,0 +1,131 @@
+service: sls-s3-static-website
+
+frameworkVersion: '2 || 3'
+
+custom:
+  siteName: ccp-task-demo.teamslice.ca
+  s3Sync:
+    - bucketName: !Ref AppBucket
+      localDir: build/
+
+config:
+  variablesResolutionMode: 20210326
+
+provider:
+  name: aws
+  stage: dev
+  profile: itcdevs
+  region: us-east-1
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  variablesResolutionMode: 20210326
+
+plugins:
+  - serverless-s3-sync
+
+
+resources:
+  Resources:
+    AppBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ccp-task-demo
+        AccessControl: Private
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+
+    AppBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref AppBucket
+        PolicyDocument:
+          Id: WebAppBucketPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: "Grant a CloudFront Origin Identity access to support private content"
+              Effect: Allow
+              Principal: '*'
+              Action: s3:GetObject
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - !GetAtt AppBucket.Arn
+                    - "/*"
+
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-cloudfrontoriginaccessidentity.html
+    # OriginAccessIdentity:
+    #   Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    #   Properties:
+    #     CloudFrontOriginAccessIdentityConfig:
+    #       Comment: ${self:service.name}-${self:provider.stage}
+
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html
+    AppDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName:
+                  Fn::Join:
+                    - ""
+                    - - !Ref AppBucket
+                      - ".s3.amazonaws.com"
+              Id: myS3Origin
+              S3OriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 433
+                OriginProtocolPolicy: https-only
+                OriginAccessIdentity:
+                  Fn::Join:
+                    - ""
+                    - - origin-access-identity/cloudfront/
+                      - !Ref OriginAccessIdentity
+          Enabled: 'true'
+          Comment: CloudFront distribution for React App
+          CustomErrorResponses:
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCachingMinTTL: 5
+              ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          DefaultRootObject: index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - POST
+              - PUT
+              - OPTIONS
+            Compress: 'true'
+            TargetOriginId: myS3Origin
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
+
+    # Outputs:
+    #   AppBucket:
+    #     Description: S3 Bucket hosting our demo-app
+    #     Value: !Ref AppBucket.Arn
+    #   DistributionId:
+    #     Value: !Ref AppDistribution.Arn
+    #     Description: CloudFront DistributionId
+    #   AppUrl:
+    #     Value: !Join
+    #       - ''
+    #       - - 'https://'
+    #         - !GetAtt
+    #           - AppDistribution
+    #           - DomainName
+    #     Description: URL for website CDN
