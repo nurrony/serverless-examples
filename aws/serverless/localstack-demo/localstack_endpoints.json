@@ -1,0 +1,11 @@
+{
+  "CloudFormation": "http://localhost:4566",
+  "CloudWatch": "http://localhost:4566",
+  "Dynamodb": "http://localhost:4566",
+  "Lambda": "http://localhost:4566",
+  "S3": "http://localhost:4566",
+  "SES": "http://localhost:4566",
+  "SNS": "http://localhost:4566",
+  "SQS": "http://localhost:4566",
+  "STS": "http://localhost:4566"
+}

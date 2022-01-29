@@ -1,0 +1,28 @@
+{
+  "name": "sls-localstack-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "deploy:local": "AWS_PROFILE=localstack npx serverless deploy --stage local --region us-east-1",
+    "start": "npm run deploy:local && npm run watch",
+    "setup": "./scripts/setup",
+    "watch": "nodemon --watch src -e js,ts,mjs,json"
+  },
+  "keywords": [
+    "serverless",
+    "localstack",
+    "aws",
+    "amazon web service",
+    "nmrony",
+    "nurrony"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "serverless": "^2.71.0",
+    "serverless-iam-roles-per-function": "^3.2.0",
+    "serverless-localstack": "^0.4.35"
+  }
+}

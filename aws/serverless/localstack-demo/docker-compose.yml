@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  localstack:
+    image: localstack/localstack:0.13
+    container_name: sls-localstack-demo
+    environment:
+      # localstack settings
+      EDGE_PORT: 4566
+      LAMBDA_EXECUTOR: docker
+      LAMBDA_REMOTE_DOCKER: "false"
+      AWS_DEFAULT_REGION: us-east-1
+      DOCKER_HOST: unix:///var/run/docker.sock
+      # all community services
+      SERVICES: acm,apigateway,cloudformation,cloudwatch,config,dynamodb,dynamodbstreams,ec2,es,events,firehose,iam,kinesis,kms,lambda,logs,redshift,resource-groups,resourcegroupstaggingapi,route53,route53resolver,s3,secretsmanager,ses,sns,sqs,ssm,stepfunctions,sts,support,swf
+      # dynamodb settings
+      DYNAMODB_CORS: "*"
+      DYNAMODB_SHARE_DB: 1
+    networks:
+      - ronsvpn
+      - k3d-ship
+    ports:
+      - 8080:8080 # web-ui
+      - 4566-4597:4566-4597
+    volumes:
+      - ./.localstack:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  ronsvpn:
+    external: true
+  k3d-ship:
+    external: true

@@ -15,14 +15,6 @@ export const create: APIGatewayProxyHandler = async (
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
 
-  if (typeof data.text !== "string") {
-    console.error("Validation Failed");
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "text is required" }),
-    };
-  }
-
   const params = {
     TableName,
     Item: {

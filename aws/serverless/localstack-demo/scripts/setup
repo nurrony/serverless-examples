@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+mkdir -p .localstack
+command -v docker >/dev/null 2>&1 || { echo >&2 "Docker Desktop is required and it's not installed.  Aborting."; exit 1; }
+command -v docker-compose >/dev/null 2>&1 || { echo >&2 "Docker Compose CLI is required and it's not installed.  Aborting."; exit 1; }
+command -v aws >/dev/null 2>&1 || { echo >&2 "AWS CLI V2 is required and it's not installed.  Aborting."; exit 1; }
+echo 'configuring localstack profile for AWS CLI'
+cat <<EOF >> $HOME/.aws/config
+[profile localstack]
+output = json
+region = us-east-1
+EOF
+cat <<EOF >> $HOME/.aws/credentials
+[profile localstack]
+aws_access_key_id = dummy-localstack-aws-access-key
+aws_secret_access_key =  dummy-localstack-aws-secret-key
+EOF
