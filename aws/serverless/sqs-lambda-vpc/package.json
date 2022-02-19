@@ -1,0 +1,18 @@
+{
+  "author": "Nur Rony <pro.nmrony@gmail.com> (https://nmrony.info/)",
+  "dependencies": {
+    "needle": "^3.0.0"
+  },
+  "description": "VPC with Lambda using SQS by serverless framework",
+  "devDependencies": {
+    "serverless-plugin-ifelse": "^1.0.7"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "main": "handler.js",
+  "name": "sqs-lambda-vpc",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}

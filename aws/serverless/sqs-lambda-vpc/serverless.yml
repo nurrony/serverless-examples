@@ -1,0 +1,65 @@
+service: sqs-lambda-conditional-vpc
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+
+plugins:
+  - serverless-plugin-ifelse
+
+custom:
+  config: ${file(./config.${opt:stage, 'dev'}.yml)}
+  serverlessIfElse:
+    - If: '"${self:provider.stage}" == "dev"'
+      ElseExclude:
+        - functions.hello.vpc
+
+functions:
+  hello:
+    handler: handler.hello
+    tags:
+      "Created By": "Rony"
+      "Environment": "experiment"
+    vpc:
+      securityGroupIds:
+        - ${self:custom.config.securityGroupId1}
+      subnetIds:
+        - ${self:custom.config.subnetId1}
+        - ${self:custom.config.subnetId2}
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - VpcConditonalQueue
+              - Arn
+
+resources:
+  - Resources:
+      VpcConditionalDeadLetterQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+          MessageRetentionPeriod: 1209600 # 14 days
+          Tags:
+            - Key: Environment
+              Value: experiment
+            - Key: "Created By"
+              Value: Rony
+
+      VpcConditonalQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+          DelaySeconds: 0
+          VisibilityTimeout: 60
+          MessageRetentionPeriod: 259200 # 3 days
+          RedrivePolicy:
+            deadLetterTargetArn: !GetAtt VpcConditionalDeadLetterQueue.Arn
+            maxReceiveCount: 3 # how many times should a msg be put back into the queue
+          Tags:
+            - Key: Environment
+              Value: experiment
+            - Key: "Created By"
+              Value: Rony
