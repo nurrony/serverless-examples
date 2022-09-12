@@ -1,0 +1,19 @@
+{
+  "author": "Nur Rony<pro.nmrony@gmail.com>",
+  "description": "Simple step function exmaple",
+  "devDependencies": {
+    "serverless": "^3.22.0"
+  },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=3.x.x"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "lambda.js",
+  "name": "step-functions-hello",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}
