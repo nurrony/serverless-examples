@@ -1,98 +1,100 @@
-service: sls-s3-static-website
+service: cf-s3-react-site
 
-frameworkVersion: '2 || 3'
+frameworkVersion: "3"
 
 custom:
-  siteName: ccp-task-demo.teamslice.ca
+  domain-name: ${self:service}.dev.sandbox3000.com
   s3Sync:
-    - bucketName: !Ref AppBucket
+    - bucketName: ${self:service}-${self:provider.stage}
       localDir: build/
-
-config:
-  variablesResolutionMode: 20210326
-
-provider:
-  name: aws
-  stage: dev
-  profile: itcdevs
-  region: us-east-1
-  runtime: nodejs14.x
-  lambdaHashingVersion: 20201221
-  variablesResolutionMode: 20210326
 
 plugins:
   - serverless-s3-sync
 
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  runtime: nodejs16.x
+  versionFunctions: false
+  tags:
+    "Created By": Rony
+  stackTags:
+    "Created By": Rony
 
 resources:
   Resources:
-    AppBucket:
+    AppOriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: react app website cloudfront origin access configuration
+
+    AppWebsiteBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref AppWebsiteBucket
+        PolicyDocument:
+          Id: WebAppWebsiteBucketPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: AppWebsiteBucketPolicy
+              Effect: Allow
+              Principal: "*"
+              Action: s3:GetObject
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - !GetAtt AppWebsiteBucket.Arn
+                    - "/*"
+
+    AppWebsiteBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ccp-task-demo
+        BucketName: ${self:service}-${self:provider.stage}
         AccessControl: Private
+        Tags:
+          - Key: "Created By"
+            Value: Rony
         PublicAccessBlockConfiguration:
           BlockPublicAcls: true
-          BlockPublicPolicy: true
+          BlockPublicPolicy: false
           IgnorePublicAcls: true
           RestrictPublicBuckets: true
         WebsiteConfiguration:
           IndexDocument: index.html
           ErrorDocument: index.html
 
-    AppBucketPolicy:
-      Type: AWS::S3::BucketPolicy
-      Properties:
-        Bucket: !Ref AppBucket
-        PolicyDocument:
-          Id: WebAppBucketPolicy
-          Version: "2012-10-17"
-          Statement:
-            - Sid: "Grant a CloudFront Origin Identity access to support private content"
-              Effect: Allow
-              Principal: '*'
-              Action: s3:GetObject
-              Resource:
-                Fn::Join:
-                  - ""
-                  - - !GetAtt AppBucket.Arn
-                    - "/*"
-
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-cloudfrontoriginaccessidentity.html
-    # OriginAccessIdentity:
-    #   Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    #   Properties:
-    #     CloudFrontOriginAccessIdentityConfig:
-    #       Comment: ${self:service.name}-${self:provider.stage}
-
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html
     AppDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
+        Tags:
+          - Key: "Created By"
+            Value: Rony
         DistributionConfig:
           Origins:
             - DomainName:
-                  Fn::Join:
-                    - ""
-                    - - !Ref AppBucket
-                      - ".s3.amazonaws.com"
-              Id: myS3Origin
+                Fn::Join:
+                  - ""
+                  - - !Ref AppWebsiteBucket
+                    - ".s3.amazonaws.com"
+              Id: AppWebsiteBucketBucketOrigin
               S3OriginConfig:
-                HTTPPort: 80
-                HTTPSPort: 433
-                OriginProtocolPolicy: https-only
                 OriginAccessIdentity:
                   Fn::Join:
                     - ""
                     - - origin-access-identity/cloudfront/
-                      - !Ref OriginAccessIdentity
-          Enabled: 'true'
-          Comment: CloudFront distribution for React App
+                      - !Ref AppOriginAccessIdentity
+          Enabled: "true"
+          Comment: React App Cloudfront site
           CustomErrorResponses:
             - ErrorCode: 403
               ResponseCode: 200
               ResponsePagePath: /index.html
-            - ErrorCachingMinTTL: 5
+            - ErrorCode: 400
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCachingMinTTL: 0
               ErrorCode: 404
               ResponseCode: 200
               ResponsePagePath: /index.html
@@ -101,31 +103,27 @@ resources:
             AllowedMethods:
               - GET
               - HEAD
-              - POST
-              - PUT
               - OPTIONS
-            Compress: 'true'
-            TargetOriginId: myS3Origin
+            Compress: "true"
+            TargetOriginId: AppWebsiteBucketBucketOrigin
             ForwardedValues:
-              QueryString: 'false'
+              QueryString: "true"
               Cookies:
                 Forward: none
             ViewerProtocolPolicy: redirect-to-https
           ViewerCertificate:
             CloudFrontDefaultCertificate: true
 
-    # Outputs:
-    #   AppBucket:
-    #     Description: S3 Bucket hosting our demo-app
-    #     Value: !Ref AppBucket.Arn
-    #   DistributionId:
-    #     Value: !Ref AppDistribution.Arn
-    #     Description: CloudFront DistributionId
-    #   AppUrl:
-    #     Value: !Join
-    #       - ''
-    #       - - 'https://'
-    #         - !GetAtt
-    #           - AppDistribution
-    #           - DomainName
-    #     Description: URL for website CDN
+  Outputs:
+    AppWebsiteBucket:
+      Description: Player bucket name
+      Value: !Ref AppWebsiteBucket
+    AppDistribution:
+      Value: !Ref AppDistribution
+      Description: CloudFront DistributionId
+    AppUrl:
+      Value: !Join
+        - ""
+        - - "https://"
+          - !GetAtt AppDistribution.DomainName
+      Description: URL of website CDN

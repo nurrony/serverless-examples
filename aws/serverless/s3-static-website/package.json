@@ -1,7 +1,16 @@
 {
-  "name": "sls-s3-static-website",
-  "version": "0.1.0",
-  "private": true,
+  "browserslist": {
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ]
+  },
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -9,16 +18,11 @@
     "web-vitals": "^1.1.2"
   },
   "devDependencies": {
-    "serverless-s3-sync": "^1.17.3",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "@testing-library/user-event": "^12.8.3",
+    "serverless": "^3.22.0",
+    "serverless-s3-sync": "^3.0.0"
   },
   "eslintConfig": {
     "extends": [
@@ -26,16 +30,13 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "name": "sls-s3-static-website",
+  "private": true,
+  "scripts": {
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "start": "react-scripts start",
+    "test": "react-scripts test"
+  },
+  "version": "0.1.0"
 }
