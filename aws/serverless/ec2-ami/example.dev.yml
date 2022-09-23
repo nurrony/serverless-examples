@@ -1,0 +1,23 @@
+resources: >
+  {
+    "ap-southeast-1":
+      {
+        "MinCount": 1,
+        "MaxCount": 1,
+        "InstanceType": "<instance-type>",
+        "DefaultImageId": "<ami-id>",
+        "KeyName": "<key-name>",
+        "SecurityGroupIds": ["<sg-id>"],
+        "IamInstanceProfileArn": "<instance-profile-arn>"
+      },
+    "us-east-1":
+       {
+        "MinCount": 1,
+        "MaxCount": 1,
+        "InstanceType": "<instance-type>",
+        "DefaultImageId": "<ami-id>",
+        "KeyName": "<key-name>",
+        "SecurityGroupIds": ["<sg-id>"],
+        "IamInstanceProfileArn": "<instance-profile-arn>"
+      }
+  }

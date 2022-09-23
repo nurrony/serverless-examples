@@ -4,8 +4,8 @@ service: products-service
 
 provider:
   name: aws
-  runtime: nodejs6.10
-#  stage: dev
+  runtime: nodejs16.x
+  #  stage: dev
   region: us-east-1
   environment:
     SERVICE_NAME: ${self:service}

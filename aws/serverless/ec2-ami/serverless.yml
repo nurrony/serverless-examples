@@ -1,0 +1,67 @@
+service: nmr-ec2-ami
+
+frameworkVersion: '3'
+
+configValidationMode: error
+
+custom:
+  config: ${file(./${self:provider.stage, 'dev'}.yml)}
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  timeout: 28
+  versionFunctions: false
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+  environment:
+    AWS_RESOURCES: '${self:custom.config.resources}'
+  tags:
+    'Created By': Rony
+  stackTags:
+    'Created By': Rony
+  iam:
+    role:
+      managedPolicies:
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      statements:
+        - Effect: 'Allow'
+          Resource: '*'
+          Action:
+            - iam:PassRole
+            - iam:ListRoles
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  createInstance:
+    handler: ec2/createInstance.execute
+    events:
+      - httpApi:
+          path: /ec2instances
+          method: get
+  createInstanceAmi:
+    handler: ec2/createAmi.execute
+    events:
+      - httpApi:
+          path: /ec2-amis
+          method: post
+
+resources:
+  Resources:
+    CreateInstancePermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:invokeFunction
+        FunctionName: !GetAtt CreateInstanceLambdaFunction.Arn
+        Principal: events.amazonaws.com
+        SourceArn: arn:aws:events:${aws:region}:${aws:accountId}:rule/*
