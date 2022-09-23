@@ -17,7 +17,7 @@ async function getInstanceDetails(params = {}) {
   return ec2.describeInstances(params).promise();
 }
 
-module.exports.execute = async (event) => {
+module.exports.execute = async (_) => {
   const currentRegionResources = resources[currentAwsRegion] || {};
   const {
     DefaultImageId: ImageId,
