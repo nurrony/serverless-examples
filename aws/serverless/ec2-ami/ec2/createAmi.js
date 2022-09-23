@@ -1,11 +1,8 @@
 const { EC2 } = require('aws-sdk');
 const ec2 = new EC2({ apiVersion: '2016-11-15' });
 
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+const createImage = async (params = {}) => ec2.createImage(params).promise();
 
-async function createImage(params = {}) {
-  return ec2.createImage(params).promise();
-}
 module.exports.execute = async (event) => {
   try {
     const { instanceId, version } = JSON.parse(event.body || '{}');
@@ -42,9 +39,6 @@ module.exports.execute = async (event) => {
     };
   } catch (error) {
     console.error('error in createAmi lambda', error);
-    return {
-      statusCode: error.statusCode,
-      body: JSON.stringify({ error }),
-    };
+    return { statusCode: error.statusCode, body: JSON.stringify({ error }) };
   }
 };
