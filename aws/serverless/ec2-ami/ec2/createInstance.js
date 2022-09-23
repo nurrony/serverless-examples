@@ -4,8 +4,6 @@ const resources = JSON.parse(process.env.AWS_RESOURCES || '{}');
 const currentAwsRegion = process.env.AWS_REGION;
 const ec2Service = new EC2({ apiVersion: '2016-11-15' });
 
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
 async function createInstance(params, metadata = { Tags: [] }) {
   // const BlockDeviceMappings = [{ DeviceName: '/dev/xvda', Ebs: { VolumeSize: 50 } }];
   const { Tags = [], MetadataOptions = { InstanceMetadataTags: 'enabled', HttpEndpoint: 'enabled' } } = metadata;
@@ -13,7 +11,7 @@ async function createInstance(params, metadata = { Tags: [] }) {
   return ec2Service.runInstances({ ...params, MetadataOptions, TagSpecifications }).promise();
 }
 
-module.exports.execute = async (_) => {
+module.exports.execute = async _ => {
   const currentRegionResources = resources[currentAwsRegion] || {};
   const {
     DefaultImageId: ImageId,
