@@ -1,0 +1,10 @@
+{
+  "author": "Nur Rony<nur.rony@nmrony.info>",
+  "description": "ami and instance manipulation using serverless framework",
+  "devDependencies": {
+    "aws-sdk": "^2.1218.0"
+  },
+  "name": "sls-ec2-ami",
+  "private": true,
+  "version": "v1.0.0"
+}
