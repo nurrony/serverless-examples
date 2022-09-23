@@ -2,7 +2,7 @@ const { EC2 } = require('aws-sdk');
 
 const resources = JSON.parse(process.env.AWS_RESOURCES || '{}');
 const currentAwsRegion = process.env.AWS_REGION;
-const ec2 = new EC2({ apiVersion: '2016-11-15' });
+const ec2Service = new EC2({ apiVersion: '2016-11-15' });
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -10,11 +10,7 @@ async function createInstance(params, metadata = { Tags: [] }) {
   // const BlockDeviceMappings = [{ DeviceName: '/dev/xvda', Ebs: { VolumeSize: 50 } }];
   const { Tags = [], MetadataOptions = { InstanceMetadataTags: 'enabled', HttpEndpoint: 'enabled' } } = metadata;
   const TagSpecifications = [{ ResourceType: 'instance', Tags: [{ Key: 'Created', Value: 'Nur Rony' }, ...Tags] }];
-  return ec2.runInstances({ ...params, MetadataOptions, TagSpecifications }).promise();
-}
-
-async function getInstanceDetails(params = {}) {
-  return ec2.describeInstances(params).promise();
+  return ec2Service.runInstances({ ...params, MetadataOptions, TagSpecifications }).promise();
 }
 
 module.exports.execute = async (_) => {
