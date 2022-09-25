@@ -1,0 +1,88 @@
+service: step-function-image-generator
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-step-functions
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+  stackTags:
+    CreatedBy: Rony
+  tags:
+    CreatedBy: Rony
+
+package:
+  individually: true
+  exclude:
+    - node_modules/**
+    - venv/**
+    - package.json
+    - package-lock.json
+    - requirements.txt
+
+functions:
+  getImageMetadata:
+    handler: src/ImageMetadata.execute
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    thumbnailGenerator:
+      name: thumbnailGenerator
+      events:
+        - cloudwatchEvent:
+            event:
+              source:
+                - 'aws.s3'
+              detail-type:
+                - 'Object Created'
+              detail:
+                bucket:
+                  name:
+                    - !Ref BucketForImage
+                reason:
+                  - 'PutObject'
+      definition:
+        StartAt: GetimageMetadata
+        States:
+          GetimageMetadata:
+            Type: Task
+            Resource: !GetAtt GetImageMetadataLambdaFunction.Arn
+            OutputPath: '$.Payload'
+            End: true
+resources:
+  Resources:
+    BucketForImage:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:stage}-thumbnail-bucket
+        NotificationConfiguration:
+          EventBridgeConfiguration:
+            EventBridgeEnabled: true
+
+    # Enforce HTTPS only access to S3 bucket #
+    BucketForImagePolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref BucketForImage
+        PolicyDocument:
+          Statement:
+            - Action: s3:*
+              Effect: Deny
+              Principal: '*'
+              Resource:
+                - !Sub 'arn:aws:s3:::${BucketForImage}/*'
+                - !Sub 'arn:aws:s3:::${BucketForImage}'
+              Condition:
+                Bool:
+                  aws:SecureTransport: false
+    #Thumbnail buket
+    ThumbnailBuket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:stage}-thumbnail-bucket

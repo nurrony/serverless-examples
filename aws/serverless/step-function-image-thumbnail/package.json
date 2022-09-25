@@ -1,0 +1,17 @@
+{
+  "name": "step-function-image-thumbnail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^3.22.0",
+    "serverless-offline": "^10.2.1",
+    "serverless-step-functions": "^3.10.0"
+  }
+}
