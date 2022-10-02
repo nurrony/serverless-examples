@@ -1,14 +1,16 @@
-service: guineapig
-frameworkVersion: '3'
+service: nmr-guineapig
+frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+  profile: itcdevs
 
 functions:
   hello:
     handler: handler.hello
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /hello
+          method: GET

@@ -3,7 +3,7 @@ const ec2 = new EC2({ apiVersion: '2016-11-15' });
 
 const createImage = async (params = {}) => ec2.createImage(params).promise();
 
-module.exports.execute = async (event) => {
+module.exports.execute = async event => {
   try {
     const { instanceId, version } = JSON.parse(event.body || '{}');
     const params = {
@@ -16,15 +16,16 @@ module.exports.execute = async (event) => {
           ResourceType: 'image',
           Tags: [
             { Key: 'CreatedBy', Value: 'Nur Rony' },
-            { Key: 'Name', Value: `ueapp-${version}` },
-            { Key: 'ueAppVersion', Value: `${version}` },
+            { Key: 'Name', Value: `nmr-${version}` },
+            { Key: 'appVersion', Value: `${version}` },
+            { Key: 'sourceInstanceId', Value: `${instanceId}` },
           ],
         },
         {
           ResourceType: 'snapshot',
           Tags: [
             { Key: 'CreatedBy', Value: 'Nur Rony' },
-            { Key: 'Name', Value: `ueapp-${version}` },
+            { Key: 'Name', Value: `nmr-${version}` },
             { Key: 'appVersion', Value: `${version}` },
           ],
         },

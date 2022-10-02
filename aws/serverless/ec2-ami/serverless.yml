@@ -53,6 +53,18 @@ functions:
       - httpApi:
           path: /ec2-amis
           method: post
+  terminateAmiInstance:
+    handler: ec2/terminateAmiInstance.execute
+    events:
+      - eventBridge:
+          pattern:
+            source:
+              - aws.ec2
+            detail-type:
+              - EC2 AMI State Change
+            detail:
+              State:
+                - available
 
 resources:
   Resources:
