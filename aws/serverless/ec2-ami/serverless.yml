@@ -65,13 +65,3 @@ functions:
             detail:
               State:
                 - available
-
-resources:
-  Resources:
-    CreateInstancePermission:
-      Type: AWS::Lambda::Permission
-      Properties:
-        Action: lambda:invokeFunction
-        FunctionName: !GetAtt CreateInstanceLambdaFunction.Arn
-        Principal: events.amazonaws.com
-        SourceArn: arn:aws:events:${aws:region}:${aws:accountId}:rule/*
