@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "cwd": "${workspaceFolder}",
+  "name": "Debug Serverless",
+  "request": "launch",
+  "runtimeArgs": ["run", "debug"],
+  "runtimeExecutable": "npm",
+  "sourceMaps": true,
+  "type": "node",
+  "outFiles": ["${workspaceFolder}/handler.js"],
+  "attachSimplePort": 9229
+}

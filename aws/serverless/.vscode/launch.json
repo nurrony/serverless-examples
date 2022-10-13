@@ -1,0 +1,19 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "cwd": "${workspaceFolder}/debug-vscode-offline",
+      "name": "Debug Serverless Offline",
+      "request": "launch",
+      "runtimeArgs": ["run", "debug"],
+      "runtimeExecutable": "/Users/nurrony/.asdf/shims/npm",
+      "sourceMaps": true,
+      "type": "node",
+      "outFiles": ["${workspaceFolder}/debug-vscode-offline/handler.js"],
+      "attachSimplePort": 9229
+    }
+  ]
+}

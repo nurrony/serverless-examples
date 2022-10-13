@@ -1,0 +1,18 @@
+{
+  "author": "Nur Rony<rony@nurrony.info>",
+  "description": "sample debug with nodejs",
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "serverless": "^3.22.0",
+    "serverless-offline": "^11.1.0"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "handler.js",
+  "name": "debug-vscode-offline",
+  "scripts": {
+    "debug": "export SLS_DEBUG=* && node --inspect ./node_modules/.bin/sls offline",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}
