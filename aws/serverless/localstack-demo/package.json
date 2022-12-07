@@ -21,7 +21,7 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.15",
-    "serverless": "^2.71.0",
+    "serverless": "^3.25.1",
     "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-localstack": "^0.4.35"
   }
