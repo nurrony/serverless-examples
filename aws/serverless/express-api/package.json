@@ -11,13 +11,13 @@
   "author": "Nur Rony <rony@nmrony.info> (https://nmrony.info)",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.2",
-    "express": "^4.16.2",
-    "serverless-http": "^1.5.3"
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.192.0",
-    "serverless-dynamodb-local": "^0.2.27",
-    "serverless-offline": "^3.17.0"
+    "aws-sdk": "^2.1341.0",
+    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-offline": "^12.0.4"
   }
 }
