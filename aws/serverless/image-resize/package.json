@@ -5,7 +5,7 @@
   "description": "Serverless image resize on-the-fly.",
   "main": "resize.js",
   "dependencies": {
-    "sharp": "^0.22.1"
+    "sharp": "^0.31.3"
   },
   "devDependencies": {
     "serverless-plugin-tracing": "^2.0.0",
