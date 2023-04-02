@@ -1,3 +1,3 @@
 Serverless Application Examples
 -------------------------------
-This repository contains various example applications that I have created to understand Serverless Architechture.
+This repository contains various tutorial of multi-FaaS applications of Serverless Architechture.
